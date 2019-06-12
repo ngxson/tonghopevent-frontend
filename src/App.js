@@ -2,6 +2,7 @@ import React from 'react';
 import Theme from './Theme';
 import LoginLayout from './layouts/Login';
 import HomeLayout from './layouts/Home';
+import ViewLayout from './layouts/View';
 import './App.css';
 import Header from './components/Header';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -28,6 +29,10 @@ class Main extends React.Component {
     return <HomeLayout />
   }
 
+  View = ({match}) => {
+    return <ViewLayout id={match.params.id} />
+  }
+
   render() {
     window.changeHeader = this.changeHeader.bind(this)
 
@@ -39,6 +44,7 @@ class Main extends React.Component {
           <div className="mainView">
             <Route exact path="/" component={this.Home} />
             <Route path="/login" component={this.Login} />
+            <Route path="/view/:id" component={this.View} />
           </div>
           <Alert />
         </React.Fragment>

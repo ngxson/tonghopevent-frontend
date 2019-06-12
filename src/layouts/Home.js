@@ -35,7 +35,6 @@ class Home extends React.Component {
   }
 
   setDoc(i, data) {
-    console.log(i, data)
     this.setState(state => {
       const list = state.list
       list[i] = data

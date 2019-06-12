@@ -30,6 +30,7 @@ class Header extends React.Component {
     this.state = {
       anchorEl: null
     }
+    this.token = Utils.getLocalStorage('token')
   }
 
   static propTypes = {
@@ -52,7 +53,7 @@ class Header extends React.Component {
 
   doLogout = () => {
     Utils.removeLocalStorage('token')
-    window.location.href = '/login'
+    window.location.href = '#/login'
   }
 
   render() {
@@ -61,11 +62,8 @@ class Header extends React.Component {
     const open = Boolean(anchorEl)
 
     const path = location.pathname
-    const showBtns = !path.startsWith('/login') && !path.startsWith('/register')
+    const showBtns = !!this.token
     var title = this.props.header
-    if (path.startsWith('/admin')) title = 'Admin'
-
-    const goToHome = () => history.push('/')
 
     return (
       <div style={styles.root}>
@@ -99,7 +97,7 @@ class Header extends React.Component {
                 onClose={this.handleClose}
               >
                 <MenuItem onClick={() => {window.location.href = '#/'}}>Home</MenuItem>
-                <MenuItem onClick={this.doLogout.bind(this)}>Logout</  MenuItem>
+                <MenuItem onClick={this.doLogout.bind(this)}>Logout</MenuItem>
               </Menu>
             </div> : null}
           </Toolbar>
