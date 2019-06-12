@@ -1,4 +1,3 @@
-'use strict'
 
 var ConfigDebug = {
   BACKEND: 'http://localhost:5000/tonghopevent'

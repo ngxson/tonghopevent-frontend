@@ -9,7 +9,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import axios from 'axios'
 import Config from '../Config'
 import Utils from '../Utils'
-import { Redirect } from 'react-router'
 
 class Login extends React.Component {
   constructor(props) {

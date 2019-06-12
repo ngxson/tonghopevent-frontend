@@ -57,11 +57,9 @@ class Header extends React.Component {
   }
 
   render() {
-    const { match, location, history } = this.props
     const { anchorEl } = this.state
     const open = Boolean(anchorEl)
 
-    const path = location.pathname
     const showBtns = !!this.token
     var title = this.props.header
 
