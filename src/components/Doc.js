@@ -26,7 +26,30 @@ class Doc extends React.Component {
     doc: PropTypes.object.isRequired,
   }
 
-  async deleteDoc() {}
+  async askDeleteDoc() {
+    window.showAlert({
+      title: 'Xác nhận xoá',
+      text: 'Xoá "' + this.props.doc.name + '" ?',
+      onClickOK: this.deleteDoc.bind(this),
+      showCancel: true
+    })
+  }
+
+  async deleteDoc() {
+    const {doc} = this.props
+    this.setState({loading: true})
+    const token = Utils.getLocalStorage('token')
+    const res = await axios.delete(`${Config.BACKEND}/doc/${doc.id}?token=${token}`)
+    if (res.data.success) {
+      this.props.setDoc(this.props.i, null)
+    } else {
+      this.setState({loading: false})
+      window.showAlert({
+        title: 'ERROR',
+        text: 'Message: ' + res.data.error
+      })
+    }
+  }
 
   async toggleApproved() {
     this.setState({loading: true})
@@ -54,7 +77,7 @@ class Doc extends React.Component {
     `#dự_án_ở_${doc.location.replace(/\s+/g, '_')} ${doc.type.join(' ')}\n\n` +
     `● Mô tả: ${doc.description.trim()}\n\n` +
     `● Link facebook: ${doc.linkfb}\n` +
-    (!!doc.wanted ? '● Yêu cầu đối tượng: ' + doc.wanted.trim() + '\n' : '') + 
+    (!!doc.wanted ? '● Yêu cầu đối tượng: ' + doc.wanted.join(', ').trim() + '\n' : '') + 
     (!!doc.deadline ? '● Deadline tuyển nhân sự: ' + doc.deadline.trim() + '\n' : '') +
     (!!doc.benefit ? '● Quyền lợi khi tham gia dự án: ' + doc.benefit.trim() + '\n' : '') +
     `\nTrackID:${doc.psid}:${doc.trackId}`
@@ -62,8 +85,33 @@ class Doc extends React.Component {
     return content.trim()
   }
 
+  nl2br(text) {
+    return text.trim().replace(/\r/g, '').split('\n').map(function(item, i, arr) {
+      const isLast = i === arr.length - 1
+      return <span>{item}{!isLast && <br/>}</span>
+    })
+  }
+
+  _renderNonAdminInfo() {
+    const { doc } = this.props
+    return <p style={{backgroundColor: '#eee', padding: '10px', width: '100%'}}>
+      <center>
+        {doc.approved
+          ? 'Bài viết này đã được duyệt và sẽ sớm đc đăng lên fanpage'
+          : 'Bài viết này đang đợi để được kiểm duyệt'
+        }
+      </center>
+    </p>
+  }
+
   render() {
     const { doc } = this.props
+
+    const componentDecorator = (href, text, key) => (
+      <a href={href} key={key} target="_blank" rel="noopener noreferrer">
+        {text}
+      </a>
+    )
 
     const loading = <div>
       <br/><br/><br/>
@@ -75,10 +123,8 @@ class Doc extends React.Component {
     </div>
 
     const content = <div>
-      <Linkify>
-        {!this.props.admin && doc.approved && <p style={{backgroundColor: '#eee', padding: '10px', width: '100%'}}>
-          <center>Bài viết này đã đc admin phê duyệt và sẽ sớm đc đăng lên fanpage</center>
-        </p>}
+      <Linkify componentDecorator={componentDecorator}>
+        {!this.props.admin && this._renderNonAdminInfo()}
         <p>
           {doc.approved && <Fab size="small" color="primary" style={{marginRight: '15px'}} disabled>
             <CheckIcon />
@@ -86,12 +132,12 @@ class Doc extends React.Component {
           <b>{doc.name}</b>
         </p>
         <p>#dự_án_ở_{doc.location.replace(/\s+/g, '_')} {doc.type.join(' ')}</p>
-        <p>{doc.description}</p>
+        <p>{this.nl2br(doc.description)}</p>
         <p>
           ● Link facebook: {doc.linkfb}<br/>
-          {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted}<br/></span>}
-          {!!doc.deadline && <span>● Deadline tuyển nhân sự: {doc.deadline}<br/></span>}
-          {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: {doc.benefit}<br/></span>}
+          {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted.join(', ')}<br/></span>}
+          {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
+          {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
         </p>
         {this.props.admin && <p>TrackID:{doc.psid}:{doc.trackId}</p>}
         {
@@ -99,12 +145,12 @@ class Doc extends React.Component {
           !!doc.feedback &&
           <p><b>== Thông tin riêng ==</b></p>
         }
-        {!!doc.image && <p>● Ảnh tuỳ chọn: {doc.image[0]}</p>}
+        {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
         {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
       </Linkify>
       {this.props.admin &&
         <div>
-          <Button variant="outlined" onClick={this.deleteDoc.bind(this)} color='primary'>Xóa</Button>&nbsp;&nbsp;
+          <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>&nbsp;&nbsp;
           <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>
             {doc.approved ? 'Bỏ duyệt' : 'Duyệt'}
           </Button>&nbsp;&nbsp;
@@ -121,7 +167,7 @@ class Doc extends React.Component {
     </div>
 
     return (
-      <div>
+      <div style={{paddingBottom: '20px'}}>
         <Card>
           <CardContent style={{backgroundColor: (doc.approved && this.props.admin) ? '#cfd8dc' : '#fff'}}>
             {this.state.loading ? loading : content}

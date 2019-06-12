@@ -68,8 +68,11 @@ class Home extends React.Component {
 
     const home = (
       <div style={classes.cardStyle}>
+        {
+          this.state.list.length === 0 && <center><h2>Chưa có bài đăng nào</h2></center>
+        }
         {this.state.list.map((doc, i) => {
-          return <Doc doc={doc} setDoc={this.setDoc.bind(this)} key={doc.id} i={i} admin />
+          return doc ? <Doc doc={doc} setDoc={this.setDoc.bind(this)} key={doc.id} i={i} admin /> : null
         })}
       </div>
     )
