@@ -33,6 +33,15 @@ class Main extends React.Component {
     return <ViewLayout id={match.params.id} />
   }
 
+  Copyright = () => {
+    return <center>
+      Developed by&nbsp;
+      <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b>&nbsp;
+      - v4.0
+      <br/><br/>
+    </center>
+  }
+
   render() {
     window.changeHeader = this.changeHeader.bind(this)
 
@@ -45,6 +54,7 @@ class Main extends React.Component {
             <Route exact path="/" component={this.Home} />
             <Route path="/login" component={this.Login} />
             <Route path="/view/:id" component={this.View} />
+            <this.Copyright />
           </div>
           <Alert />
         </React.Fragment>
