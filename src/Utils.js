@@ -17,6 +17,13 @@ class Utils {
     }
   }
 
+  static checkError(res) {
+    if (res && res.data && res.data.error === 'Invalid token') {
+      Utils.removeLocalStorage('token')
+      window.location.reload()
+    }
+  }
+
   static setLocalStorage(name, value) {
     localStorage.setItem(name, JSON.stringify(value))
   }

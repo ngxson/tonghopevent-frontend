@@ -23,6 +23,7 @@ class Home extends React.Component {
   async loadData() {
     const token = Utils.getToken()
     const res = await axios.get(`${Config.BACKEND}/feed?token=${token}`)
+    Utils.checkError(res)
     this.setState({loading: false, list: res.data})
   }
 

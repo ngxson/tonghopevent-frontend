@@ -73,14 +73,14 @@ class Doc extends React.Component {
   getCopyContent() {
     const { doc } = this.props
 
-    const content = `${doc.name}\n` +
+    const content = `-- ${doc.name} --\n` +
     `#dự_án_ở_${doc.location.replace(/\s+/g, '_')} ${doc.type.join(' ')}\n\n` +
     `● Mô tả: ${doc.description.trim()}\n\n` +
     `● Link facebook: ${doc.linkfb}\n` +
     (!!doc.wanted ? '● Yêu cầu đối tượng: ' + doc.wanted.join(', ').trim() + '\n' : '') + 
     (!!doc.deadline ? '● Deadline tuyển nhân sự: ' + doc.deadline.trim() + '\n' : '') +
     (!!doc.benefit ? '● Quyền lợi khi tham gia dự án: ' + doc.benefit.trim() + '\n' : '') +
-    `\nTrackID:${doc.psid}:${doc.trackId}`
+    `\nTrackID:${doc.psid}:${doc.id}`
 
     return content.trim()
   }
@@ -113,6 +113,14 @@ class Doc extends React.Component {
       </a>
     )
 
+    const generateLocationTag = () => {
+      const {location} = doc
+      if (!location) return ''
+      return location === 'Toàn quốc'
+        ? `#dự_án_toàn_quốc`
+        : `#dự_án_ở_${doc.location.replace(/\s+/g, '_')}`
+    }
+
     const loading = <div>
       <br/><br/><br/>
       <center>
@@ -129,9 +137,9 @@ class Doc extends React.Component {
           {doc.approved && <Fab size="small" color="primary" style={{marginRight: '15px'}} disabled>
             <CheckIcon />
           </Fab>}
-          <b>{doc.name}</b>
+          <b>-- {doc.name} --</b>
         </p>
-        <p>#dự_án_ở_{doc.location.replace(/\s+/g, '_')} {doc.type.join(' ')}</p>
+        <p>{generateLocationTag()} {doc.type.join(' ')}</p>
         <p>{this.nl2br(doc.description)}</p>
         <p>
           ● Link facebook: {doc.linkfb}<br/>
@@ -139,10 +147,9 @@ class Doc extends React.Component {
           {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
           {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
         </p>
-        {this.props.admin && <p>TrackID:{doc.psid}:{doc.trackId}</p>}
+        {this.props.admin && <p>TrackID:{doc.psid}:{doc.id}</p>}
         {
-          !!doc.image &&
-          !!doc.feedback &&
+          (!!doc.image || !!doc.feedback) &&
           <p><b>== Thông tin riêng ==</b></p>
         }
         {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
