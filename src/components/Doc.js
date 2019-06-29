@@ -74,7 +74,7 @@ class Doc extends React.Component {
     const { doc } = this.props
 
     const content = `-- ${doc.name} --\n` +
-    `#dự_án_ở_${doc.location.replace(/\s+/g, '_')} ${doc.type.join(' ')}\n\n` +
+    `${this.generateLocationTag(doc)} ${doc.type.join(' ')}\n\n` +
     `● Mô tả: ${doc.description.trim()}\n\n` +
     `● Link facebook: ${doc.linkfb}\n` +
     (!!doc.wanted ? '● Yêu cầu đối tượng: ' + doc.wanted.join(', ').trim() + '\n' : '') + 
@@ -90,6 +90,14 @@ class Doc extends React.Component {
       const isLast = i === arr.length - 1
       return <span>{item}{!isLast && <br/>}</span>
     })
+  }
+
+  generateLocationTag(doc) {
+    const { location } = doc
+    if (!location) return ''
+    return location === 'Toàn quốc'
+      ? `#dự_án_toàn_quốc`
+      : `#dự_án_ở_${doc.location.replace(/\s+/g, '_')}`
   }
 
   _renderNonAdminInfo() {
@@ -113,14 +121,6 @@ class Doc extends React.Component {
       </a>
     )
 
-    const generateLocationTag = () => {
-      const {location} = doc
-      if (!location) return ''
-      return location === 'Toàn quốc'
-        ? `#dự_án_toàn_quốc`
-        : `#dự_án_ở_${doc.location.replace(/\s+/g, '_')}`
-    }
-
     const loading = <div>
       <br/><br/><br/>
       <center>
@@ -139,7 +139,7 @@ class Doc extends React.Component {
           </Fab>}
           <b>-- {doc.name} --</b>
         </p>
-        <p>{generateLocationTag()} {doc.type.join(' ')}</p>
+        <p>{this.generateLocationTag(doc)} {doc.type.join(' ')}</p>
         <p>{this.nl2br(doc.description)}</p>
         <p>
           ● Link facebook: {doc.linkfb}<br/>
