@@ -72,7 +72,14 @@ class Publish extends React.Component {
     return (
       <Card>
         <CardContent>
-          <p><b>Soạn bài đăng</b></p>
+          <p>
+            <Button
+              variant='outlined'
+              size='small'
+              onClick={() => window.location.hash = '#/'}>Trở về</Button>
+            &nbsp;&nbsp;&nbsp;
+            <b>Soạn bài đăng</b>
+          </p>
           <center>
             <Img alt=''
               src={this.state.url}
