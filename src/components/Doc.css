@@ -17,3 +17,7 @@
     right: 0;
     background-image: linear-gradient( rgba(207, 216, 220, 0) 50%, rgba(207, 216, 220, 1) 100% );
 }
+
+.MuiButton-outlinedPrimary {
+    margin-top: 0.8em !important;
+}

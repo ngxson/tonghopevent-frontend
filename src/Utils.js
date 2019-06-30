@@ -45,6 +45,13 @@ class Utils {
     let y = date.getFullYear()
     return `${d < 10 ? '0' : ''}${d}-${m < 10 ? '0' : ''}${m}-${y}`
   }
+
+  static getTimeStr(timestamp) {
+    let date = new Date(timestamp)
+    let hh = date.getHours()
+    let mm = date.getMinutes()
+    return `${hh < 10 ? '0' : ''}${hh}h${mm < 10 ? '0' : ''}${mm}`
+  }
 }
 
 export default Utils

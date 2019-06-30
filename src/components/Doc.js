@@ -115,14 +115,19 @@ class Doc extends React.Component {
     </p>
   }
 
-  openImageView() {
+  getImageUrl() {
     const { doc } = this.props
-    window.open('https://drive.google.com/uc?export=view&id=' + doc.image[0])
+    return 'https://drive.google.com/uc?export=view&id=' + doc.image[0]
+  }
+
+  openImageView() {
+    window.open(this.getImageUrl())
   }
 
   render() {
     const { doc } = this.props
     const { isExpanded } = this.state
+    const gotoPublish = this.props.gotoPublish || (() => {})
 
     const componentDecorator = (href, text, key) => (
       <a href={href} key={key} target="_blank" rel="noopener noreferrer">
@@ -132,7 +137,7 @@ class Doc extends React.Component {
 
     const content = <div>
       <Linkify componentDecorator={componentDecorator}>
-        <div style={isExpanded ? null : {maxHeight: '315px', overflowY:'hidden', position: 'relative'}} className={isExpanded ? null : 'fade-out'}>
+        <div style={isExpanded ? null : {maxHeight: '315px', overflow:'hidden', position: 'relative'}} className={isExpanded ? null : 'fade-out'}>
           {!this.props.admin && this._renderNonAdminInfo()}
           <p>
             {doc.approved && <Fab size="small" color="primary" style={{marginRight: '15px'}} disabled>
@@ -164,7 +169,7 @@ class Doc extends React.Component {
           </center>
         </div>}
       </Linkify>
-      <Divider style={{marginBottom: '20px'}}/>
+      <Divider />
       {this.props.admin &&
         <React.Fragment>
           {!this.state.loading ? <div>
@@ -182,6 +187,12 @@ class Doc extends React.Component {
             </CopyToClipboard>&nbsp;&nbsp;
             {doc.image &&
               <Button variant="outlined" onClick={this.openImageView.bind(this)} color='primary'>Lấy ảnh</Button>
+            }&nbsp;&nbsp;
+            {doc.image &&
+              <Button variant="outlined" onClick={() => {gotoPublish({
+                caption: this.getCopyContent(),
+                url: this.getImageUrl()
+              })}} color='primary'>Đăng bài</Button>
             }
           </div>
           : <center>

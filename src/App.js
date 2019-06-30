@@ -3,6 +3,7 @@ import Theme from './Theme';
 import LoginLayout from './layouts/Login';
 import HomeLayout from './layouts/Home';
 import ViewLayout from './layouts/View';
+import PublishLayout from './layouts/Publish';
 import './App.css';
 import Header from './components/Header';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,7 +14,10 @@ import Alert from './components/Alert';
 class Main extends React.Component {
   constructor() {
     super()
-    this.state = {header: 'Home'}
+    this.state = {
+      header: 'Home',
+      publishData: null
+    }
   }
 
   changeHeader(header) {
@@ -21,16 +25,31 @@ class Main extends React.Component {
     else this.setState({header})
   }
 
+  gotoPublish(data) {
+    this.setState({publishData: data})
+    window.location.hash = '#/publish'
+  }
+
   Login = () => {
     return <LoginLayout />
   }
 
   Home = () => {
-    return <HomeLayout />
+    return <HomeLayout
+      gotoPublish={this.gotoPublish.bind(this)}
+    />
   }
 
   View = ({match}) => {
-    return <ViewLayout id={match.params.id} />
+    return <ViewLayout
+      id={match.params.id}
+    />
+  }
+
+  Publish = () => {
+    return <PublishLayout
+      data={this.state.publishData}
+    />
   }
 
   Copyright = () => {
@@ -54,6 +73,7 @@ class Main extends React.Component {
             <Route exact path="/" component={this.Home} />
             <Route path="/login" component={this.Login} />
             <Route path="/view/:id" component={this.View} />
+            <Route path="/publish" component={this.Publish} />
             <this.Copyright />
           </div>
           <Alert />

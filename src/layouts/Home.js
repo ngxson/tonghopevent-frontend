@@ -67,13 +67,21 @@ class Home extends React.Component {
       <center><CircularProgress /></center>
     </div>
 
+    const { gotoPublish } = this.props
     const home = (
       <div style={classes.cardStyle}>
         {
           this.state.list.length === 0 && <center><h2>Chưa có bài đăng nào</h2></center>
         }
         {this.state.list.map((doc, i) => {
-          return doc ? <Doc doc={doc} setDoc={this.setDoc.bind(this)} key={doc.id} i={i} admin /> : null
+          return doc ? <Doc
+            doc={doc}
+            setDoc={this.setDoc.bind(this)}
+            key={doc.id}
+            i={i}
+            admin
+            gotoPublish={gotoPublish}
+          /> : null
         })}
       </div>
     )
