@@ -66,9 +66,8 @@ class Publish extends React.Component {
 
   _renderComposerCard() {
     const imgStyle = {
-      maxHeight: '100%',
       height: '300px',
-      width: '300px',
+      maxWidth: '100%',
     }
     return (
       <Card>
@@ -78,7 +77,7 @@ class Publish extends React.Component {
             <Img alt=''
               src={this.state.url}
               style={imgStyle}
-              loader={<div style={imgStyle}><center><CircularProgress /></center></div>}
+              loader={<div style={imgStyle}><center><br/><br/><CircularProgress /></center></div>}
             />  
           </center>
           <TextField
