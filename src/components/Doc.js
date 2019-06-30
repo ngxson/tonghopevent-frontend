@@ -115,6 +115,11 @@ class Doc extends React.Component {
     </p>
   }
 
+  openImageView() {
+    const { doc } = this.props
+    window.open('https://drive.google.com/uc?export=view&id=' + doc.image[0])
+  }
+
   render() {
     const { doc } = this.props
     const { isExpanded } = this.state
@@ -151,13 +156,13 @@ class Doc extends React.Component {
           {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
           {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
         </div>
-        <div style={isExpanded
-          ? {display: 'none'} : null}
-        >
+        {this.props.admin && <div>
           <center>
-            <Button onClick={() => this.setState({isExpanded: true})}>Hiện thêm ...</Button>
+            <Button onClick={() => this.setState({isExpanded: !isExpanded})}>
+              {isExpanded ? 'Thu gọn' : 'Hiện thêm ...'}
+            </Button>
           </center>
-        </div>
+        </div>}
       </Linkify>
       <Divider style={{marginBottom: '20px'}}/>
       {this.props.admin &&
@@ -174,7 +179,10 @@ class Doc extends React.Component {
               <Button variant="outlined" color='primary'>
                 {this.state.isCopied ? '(Đã copy)' : 'Copy'}
               </Button>
-            </CopyToClipboard>
+            </CopyToClipboard>&nbsp;&nbsp;
+            {doc.image &&
+              <Button variant="outlined" onClick={this.openImageView.bind(this)} color='primary'>Lấy ảnh</Button>
+            }
           </div>
           : <center>
             <CircularProgress />
