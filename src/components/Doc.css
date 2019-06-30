@@ -1,0 +1,19 @@
+.fade-out:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: linear-gradient( rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100% );
+}
+
+.approved .fade-out:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: linear-gradient( rgba(207, 216, 220, 0) 50%, rgba(207, 216, 220, 1) 100% );
+}

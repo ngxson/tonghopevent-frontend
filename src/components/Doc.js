@@ -10,7 +10,9 @@ import Button from '@material-ui/core/Button'
 import Linkify from 'react-linkify'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Fab from '@material-ui/core/Fab'
+import Divider from '@material-ui/core/Divider'
 import CheckIcon from '@material-ui/icons/Check'
+import './Doc.css'
 
 class Doc extends React.Component {
   constructor(props) {
@@ -18,7 +20,8 @@ class Doc extends React.Component {
     this.props = props
     this.state = {
       loading: false,
-      isCopied: false
+      isCopied: false,
+      isExpanded: !this.props.admin
     }
   }
 
@@ -114,6 +117,7 @@ class Doc extends React.Component {
 
   render() {
     const { doc } = this.props
+    const { isExpanded } = this.state
 
     const componentDecorator = (href, text, key) => (
       <a href={href} key={key} target="_blank" rel="noopener noreferrer">
@@ -121,63 +125,72 @@ class Doc extends React.Component {
       </a>
     )
 
-    const loading = <div>
-      <br/><br/><br/>
-      <center>
-        <CircularProgress /><br/>
-        Xin chờ...
-      </center>
-      <br/><br/><br/>
-    </div>
-
     const content = <div>
       <Linkify componentDecorator={componentDecorator}>
-        {!this.props.admin && this._renderNonAdminInfo()}
-        <p>
-          {doc.approved && <Fab size="small" color="primary" style={{marginRight: '15px'}} disabled>
-            <CheckIcon />
-          </Fab>}
-          <b>-- {doc.name} --</b>
-        </p>
-        <p>{this.generateLocationTag(doc)} {doc.type.join(' ')}</p>
-        <p>{this.nl2br(doc.description)}</p>
-        <p>
-          ● Link facebook: {doc.linkfb}<br/>
-          {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted.join(', ')}<br/></span>}
-          {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
-          {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
-        </p>
-        {this.props.admin && <p>TrackID:{doc.psid}:{doc.id}</p>}
-        {
-          (!!doc.image || !!doc.feedback) &&
-          <p><b>== Thông tin riêng ==</b></p>
-        }
-        {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
-        {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
-      </Linkify>
-      {this.props.admin &&
-        <div>
-          <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>&nbsp;&nbsp;
-          <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>
-            {doc.approved ? 'Bỏ duyệt' : 'Duyệt'}
-          </Button>&nbsp;&nbsp;
-          <CopyToClipboard
-            text={this.getCopyContent()}
-            onCopy={() => this.setState({isCopied: true})}
-          >
-            <Button variant="outlined" color='primary'>
-              {this.state.isCopied ? '(Đã copy)' : 'Copy'}
-            </Button>
-          </CopyToClipboard>
+        <div style={isExpanded ? null : {maxHeight: '315px', overflowY:'hidden', position: 'relative'}} className={isExpanded ? null : 'fade-out'}>
+          {!this.props.admin && this._renderNonAdminInfo()}
+          <p>
+            {doc.approved && <Fab size="small" color="primary" style={{marginRight: '15px'}} disabled>
+              <CheckIcon />
+            </Fab>}
+            <b>-- {doc.name} --</b>
+          </p>
+          <p>{this.generateLocationTag(doc)} {doc.type.join(' ')}</p>
+          <p>{this.nl2br(doc.description)}</p>
+          <p>
+            ● Link facebook: {doc.linkfb}<br/>
+            {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted.join(', ')}<br/></span>}
+            {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
+            {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
+          </p>
+          {this.props.admin && <p>TrackID:{doc.psid}:{doc.id}</p>}
+          {
+            (!!doc.image || !!doc.feedback) &&
+            <p><b>== Thông tin riêng ==</b></p>
+          }
+          {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
+          {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
         </div>
+        <div style={isExpanded
+          ? {display: 'none'} : null}
+        >
+          <center>
+            <Button onClick={() => this.setState({isExpanded: true})}>Hiện thêm ...</Button>
+          </center>
+        </div>
+      </Linkify>
+      <Divider style={{marginBottom: '20px'}}/>
+      {this.props.admin &&
+        <React.Fragment>
+          {!this.state.loading ? <div>
+            <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>&nbsp;&nbsp;
+            <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>
+              {doc.approved ? 'Bỏ duyệt' : 'Duyệt'}
+            </Button>&nbsp;&nbsp;
+            <CopyToClipboard
+              text={this.getCopyContent()}
+              onCopy={() => this.setState({isCopied: true})}
+            >
+              <Button variant="outlined" color='primary'>
+                {this.state.isCopied ? '(Đã copy)' : 'Copy'}
+              </Button>
+            </CopyToClipboard>
+          </div>
+          : <center>
+            <CircularProgress />
+          </center>}
+        </React.Fragment>
       }
     </div>
 
     return (
       <div style={{paddingBottom: '20px'}}>
         <Card>
-          <CardContent style={{backgroundColor: (doc.approved && this.props.admin) ? '#cfd8dc' : '#fff'}}>
-            {this.state.loading ? loading : content}
+          <CardContent
+            style={{backgroundColor: (doc.approved && this.props.admin) ? '#cfd8dc' : '#fff'}}
+            className={(doc.approved && this.props.admin) ? 'approved' : null}
+          >
+            {content}
           </CardContent>        
         </Card>
       </div>
