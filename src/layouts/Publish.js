@@ -32,6 +32,7 @@ class Publish extends React.Component {
       this.state.url = props.data.url
       this.state.scheduled_publish_time = 0
     }
+    window.changeHeader('Công cụ đăng bài - TongHopEvent')
   }
 
   componentDidMount() {

@@ -56,7 +56,7 @@ class Main extends React.Component {
     return <center>
       Developed by&nbsp;
       <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b>&nbsp;
-      - v4.1_r1
+      - v4.2
       <br/><br/>
     </center>
   }
