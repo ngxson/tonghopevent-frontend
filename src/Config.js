@@ -8,7 +8,7 @@ var ConfigProduction = {
 
 var Config = ConfigDebug
 var MODE = process.env.REACT_APP_MODE
-//if (MODE === 'production')
+if (MODE === 'production')
   Config = ConfigProduction
 
 export default Config
