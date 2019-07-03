@@ -21,7 +21,17 @@ class Doc extends React.Component {
     this.state = {
       loading: false,
       isCopied: false,
-      isExpanded: !this.props.admin
+      isExpanded: !this.props.admin,
+      copyContent: this.props.admin ? this.getCopyContent() : ''
+    }
+
+    if (props.admin) {
+      if (props.doc.image)
+        this.state.publishAction = 'publish'
+      else if (Utils.extractFacebookUsername(this.state.copyContent))
+        this.state.publishAction = 'getimage'
+      else
+        this.state.publishAction = null
     }
   }
 
@@ -91,7 +101,7 @@ class Doc extends React.Component {
   nl2br(text) {
     return text.trim().replace(/\r/g, '').split('\n').map(function(item, i, arr) {
       const isLast = i === arr.length - 1
-      return <span>{item}{!isLast && <br/>}</span>
+      return <span key={i}>{item}{!isLast && <br/>}</span>
     })
   }
 
@@ -117,7 +127,7 @@ class Doc extends React.Component {
 
   getImageUrl() {
     const { doc } = this.props
-    return 'https://drive.google.com/uc?export=view&id=' + doc.image[0]
+    return doc.image ? 'https://drive.google.com/uc?export=view&id=' + doc.image[0] : null
   }
 
   openImageView() {
@@ -126,7 +136,7 @@ class Doc extends React.Component {
 
   render() {
     const { doc } = this.props
-    const { isExpanded } = this.state
+    const { isExpanded, copyContent, publishAction } = this.state
     const gotoPublish = this.props.gotoPublish || (() => {})
 
     const componentDecorator = (href, text, key) => (
@@ -173,26 +183,26 @@ class Doc extends React.Component {
       {this.props.admin &&
         <React.Fragment>
           {!this.state.loading ? <div>
-            <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>&nbsp;&nbsp;
+            <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>
             <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>
               {doc.approved ? 'Bỏ duyệt' : 'Duyệt'}
-            </Button>&nbsp;&nbsp;
+            </Button>
             <CopyToClipboard
-              text={this.getCopyContent()}
+              text={copyContent}
               onCopy={() => this.setState({isCopied: true})}
             >
               <Button variant="outlined" color='primary'>
                 {this.state.isCopied ? '(Đã copy)' : 'Copy'}
               </Button>
-            </CopyToClipboard>&nbsp;&nbsp;
+            </CopyToClipboard>
             {doc.image &&
               <Button variant="outlined" onClick={this.openImageView.bind(this)} color='primary'>Lấy ảnh</Button>
-            }&nbsp;&nbsp;
-            {doc.image &&
+            }
+            {publishAction &&
               <Button variant="outlined" onClick={() => {gotoPublish({
-                caption: this.getCopyContent(),
+                caption: copyContent,
                 url: this.getImageUrl()
-              })}} color='primary'>Đăng bài</Button>
+              }, publishAction)}} color='primary'>Đăng bài</Button>
             }
           </div>
           : <center>

@@ -52,6 +52,15 @@ class Utils {
     let mm = date.getMinutes()
     return `${hh < 10 ? '0' : ''}${hh}h${mm < 10 ? '0' : ''}${mm}`
   }
+
+  static extractFacebookUsername(text = '') {
+    const matched = text.match(/[facebok]+\.com\/([^?/]+)/)
+    if (!matched || matched.length < 1) return null
+    const uname = matched[1]
+    const _id = uname.match(/-([0-9]{7,20})$/)
+    if (!_id || _id.length < 1) return uname
+    else return _id[1]
+  }
 }
 
 export default Utils

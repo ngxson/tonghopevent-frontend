@@ -4,6 +4,7 @@ import LoginLayout from './layouts/Login';
 import HomeLayout from './layouts/Home';
 import ViewLayout from './layouts/View';
 import PublishLayout from './layouts/Publish';
+import GetImageLayout from './layouts/GetImage';
 import './App.css';
 import Header from './components/Header';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,7 +17,7 @@ class Main extends React.Component {
     super()
     this.state = {
       header: 'Home',
-      publishData: null
+      publishData: null,
     }
   }
 
@@ -25,9 +26,9 @@ class Main extends React.Component {
     else this.setState({header})
   }
 
-  gotoPublish(data) {
+  gotoPublish(data, publishAction) {
     this.setState({publishData: data})
-    window.location.hash = '#/publish'
+    window.location.hash = '#/' + publishAction
   }
 
   Login = () => {
@@ -52,11 +53,18 @@ class Main extends React.Component {
     />
   }
 
+  GetImage = () => {
+    return <GetImageLayout
+      data={this.state.publishData}
+      gotoPublish={this.gotoPublish.bind(this)}
+    />
+  }
+
   Copyright = () => {
     return <center>
       Developed by&nbsp;
       <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b>&nbsp;
-      - v4.2
+      - v4.3
       <br/><br/>
     </center>
   }
@@ -74,6 +82,7 @@ class Main extends React.Component {
             <Route path="/login" component={this.Login} />
             <Route path="/view/:id" component={this.View} />
             <Route path="/publish" component={this.Publish} />
+            <Route path="/getimage" component={this.GetImage} />
             <this.Copyright />
           </div>
           <Alert />
