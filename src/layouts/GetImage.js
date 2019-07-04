@@ -137,7 +137,7 @@ class GetImage extends React.Component {
             &nbsp;&nbsp;&nbsp;
             <b>Lấy token</b><br/>
             <br/>
-            Bạn chưa có token hoặc token đã bị hết hạn. Hãy làm theo hướng dẫn này để lấy token.<br/>
+            Bạn chưa có token hoặc token đã bị hết hạn. Hãy làm theo hướng dẫn này để lấy token: <a href="https://blog.ngxson.com/tonghopevent/#lay-token" target="_blank" rel="noopener noreferrer">[Bấm vào đây]</a><br/>
             Lưu ý: token sẽ đc lưu trên máy này. Bạn có thể lấy token từ máy tính để dùng trên ĐT.<br/>
             Điền token của bạn vào ô dưới đây:<br/>
           </p>
