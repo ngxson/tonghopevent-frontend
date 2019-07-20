@@ -54,7 +54,7 @@ class Utils {
   }
 
   static extractFacebookUsername(text = '') {
-    const matched = text.match(/[facebok]+\.com\/([^?/]+)/)
+    const matched = text.replace('/pg', '').match(/[facebok]+\.com\/([^?/]+)/)
     if (!matched || matched.length < 1) return null
     const uname = matched[1]
     const _id = uname.match(/-([0-9]{7,20})$/)
