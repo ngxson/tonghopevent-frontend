@@ -4,6 +4,7 @@ import axios from 'axios'
 import Config from '../Config'
 import Utils from '../Utils'
 import Doc from '../components/Doc'
+import ToolsDialog from '../components/ToolsDialog'
 
 class Home extends React.Component {
   constructor(props) {
@@ -12,6 +13,8 @@ class Home extends React.Component {
     this.state = {
       loading: true,
       list: [],
+      toolsDialogOpen: false,
+      toolsDialogDoc: {},
     }
     window.changeHeader('Quản lý dữ liệu - TongHopEvent')
   }
@@ -43,6 +46,13 @@ class Home extends React.Component {
     })
   }
 
+  openToolsDialog(doc) {
+    this.setState({
+      toolsDialogOpen: true,
+      toolsDialogDoc: doc
+    })
+  }
+
   render() {
     var classes = {
       input: {
@@ -69,21 +79,30 @@ class Home extends React.Component {
 
     const { gotoPublish } = this.props
     const home = (
-      <div style={classes.cardStyle}>
-        {
-          this.state.list.length === 0 && <center><h2>Chưa có bài đăng nào</h2></center>
-        }
-        {this.state.list.map((doc, i) => {
-          return doc ? <Doc
-            doc={doc}
-            setDoc={this.setDoc.bind(this)}
-            key={doc.id}
-            i={i}
-            admin
-            gotoPublish={gotoPublish}
-          /> : null
-        })}
-      </div>
+      <React.Fragment>
+        <div style={classes.cardStyle}>
+          {
+            this.state.list.length === 0 && <center><h2>Chưa có bài đăng nào</h2></center>
+          }
+          {this.state.list.map((doc, i) => {
+            return doc ? <Doc
+              doc={doc}
+              setDoc={this.setDoc.bind(this)}
+              key={doc.id}
+              i={i}
+              admin
+              gotoPublish={gotoPublish}
+              openToolsDialog={this.openToolsDialog.bind(this)}
+            /> : null
+          })}
+        </div>
+        <ToolsDialog
+          open={this.state.toolsDialogOpen}
+          closeToolsDialog={() => this.setState({toolsDialogOpen: false})}
+          name={this.state.toolsDialogDoc.name}
+          psid={this.state.toolsDialogDoc.psid}
+        />
+      </React.Fragment>
     )
 
     return this.state.loading ? loading : home

@@ -39,6 +39,7 @@ class GetImage extends React.Component {
     }
     if (props.data) {
       this.state.caption = props.data.caption
+      this.state.fbusername = props.data.fbusername
     } else {
       this.state.error = 'Hãy về trang chủ và thử lại'
     }
@@ -52,7 +53,7 @@ class GetImage extends React.Component {
   async fetchFacebookApi() {
     const fbtoken = Utils.getLocalStorage('fbtoken')
     try {
-      const res = await axios.get(`https://graph.facebook.com/${Utils.extractFacebookUsername(this.state.caption)}?fields=feed.limit(20)%7Bfull_picture%7D%2Cpicture.width(720)%7Burl%7D&access_token=${fbtoken}`)
+      const res = await axios.get(`https://graph.facebook.com/${this.state.fbusername}?fields=feed.limit(20)%7Bfull_picture%7D%2Cpicture.width(720)%7Burl%7D&access_token=${fbtoken}`)
       if (res.data.error) {
         this.setState({loading: false, showGetToken: true})
       } else {

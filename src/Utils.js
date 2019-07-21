@@ -1,4 +1,6 @@
 
+import axios from 'axios'
+
 class Utils {
   static getToken() {
     const token = Utils.getLocalStorage('token')
@@ -54,12 +56,22 @@ class Utils {
   }
 
   static extractFacebookUsername(text = '') {
-    const matched = text.replace('/pg', '').match(/[facebok]+\.com\/([^?/]+)/)
+    const matched = text.replace('/pg/', '/').match(/[facebok]+\.com\/([^?/]+)/)
     if (!matched || matched.length < 1) return null
     const uname = matched[1]
     const _id = uname.match(/-([0-9]{7,20})$/)
     if (!_id || _id.length < 1) return uname
     else return _id[1]
+  }
+
+  static makeRequest(url, opts = {}) {
+    const token = Utils.getLocalStorage('token')
+    opts.url = url + (url.indexOf('?') !== -1 ? '&' : '?') + 'token=' + token
+    return axios(opts)
+  }
+
+  static cleanFBLink(url = '') {
+    return url.replace(/[&?](__|eid|fref)[^&?\s]+/g, '')
   }
 }
 

@@ -25,10 +25,14 @@ class Doc extends React.Component {
       copyContent: this.props.admin ? this.getCopyContent() : ''
     }
 
+    if (this.props.doc && this.props.doc.linkfb) {
+      this.fbusername = Utils.extractFacebookUsername(this.props.doc.linkfb)
+    }
+
     if (props.admin) {
       if (props.doc.image)
         this.state.publishAction = 'publish'
-      else if (Utils.extractFacebookUsername(this.state.copyContent))
+      else if (this.fbusername)
         this.state.publishAction = 'getimage'
       else
         this.state.publishAction = null
@@ -42,7 +46,7 @@ class Doc extends React.Component {
   async askDeleteDoc() {
     window.showAlert({
       title: 'Xác nhận xoá',
-      text: 'Xoá "' + this.props.doc.name + '" ?',
+      text: 'Xoá "' + this.props.doc.name + '" ? Người điền form sẽ KHÔNG nhận đc thông báo xóa.',
       onClickOK: this.deleteDoc.bind(this),
       showCancel: true
     })
@@ -89,7 +93,7 @@ class Doc extends React.Component {
     const content = `-- ${doc.name} --\n` +
     `${this.generateLocationTag(doc)} ${doc.type.join(' ')}\n\n` +
     `● Mô tả: ${doc.description.trim()}\n\n` +
-    `● Link facebook: ${doc.linkfb}\n` +
+    `● Link facebook: ${Utils.cleanFBLink(doc.linkfb)}\n` +
     (!!doc.wanted ? '● Yêu cầu đối tượng: ' + doc.wanted.join(', ').trim() + '\n' : '') + 
     (!!doc.deadline ? '● Deadline tuyển nhân sự: ' + doc.deadline.trim() + '\n' : '') +
     (!!doc.benefit ? '● Quyền lợi khi tham gia dự án: ' + doc.benefit.trim() + '\n' : '') +
@@ -158,7 +162,7 @@ class Doc extends React.Component {
           <p>{this.generateLocationTag(doc)} {doc.type.join(' ')}</p>
           <p>{this.nl2br(doc.description)}</p>
           <p>
-            ● Link facebook: {doc.linkfb}<br/>
+            ● Link facebook: {Utils.cleanFBLink(doc.linkfb)}<br/>
             {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted.join(', ')}<br/></span>}
             {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
             {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
@@ -184,9 +188,7 @@ class Doc extends React.Component {
         <React.Fragment>
           {!this.state.loading ? <div>
             <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>
-            <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>
-              {doc.approved ? 'Bỏ duyệt' : 'Duyệt'}
-            </Button>
+            <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>Tick</Button>
             <CopyToClipboard
               text={copyContent}
               onCopy={() => this.setState({isCopied: true})}
@@ -195,15 +197,17 @@ class Doc extends React.Component {
                 {this.state.isCopied ? '(Đã copy)' : 'Copy'}
               </Button>
             </CopyToClipboard>
-            {doc.image &&
+            {/*doc.image &&
               <Button variant="outlined" onClick={this.openImageView.bind(this)} color='primary'>Lấy ảnh</Button>
-            }
+            */}
             {publishAction &&
               <Button variant="outlined" onClick={() => {gotoPublish({
                 caption: copyContent,
-                url: this.getImageUrl()
+                url: this.getImageUrl(),
+                fbusername: this.fbusername,
               }, publishAction)}} color='primary'>Đăng bài</Button>
             }
+            <Button variant="outlined" onClick={() => this.props.openToolsDialog(doc)} color='primary'>+</Button>
           </div>
           : <center>
             <CircularProgress />

@@ -11,6 +11,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { HashRouter, Route } from 'react-router-dom';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Alert from './components/Alert';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 class Main extends React.Component {
   constructor() {
@@ -64,7 +66,7 @@ class Main extends React.Component {
     return <center>
       Developed by&nbsp;
       <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b>&nbsp;
-      - v4.3
+      - v4.4
       <br/><br/>
     </center>
   }
@@ -96,6 +98,17 @@ function App() {
   return (
     <HashRouter>
       <Main />
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnVisibilityChange
+        draggable
+        pauseOnHover
+      />
     </HashRouter>
   );
 }
