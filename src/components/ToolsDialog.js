@@ -51,7 +51,7 @@ class ToolsDialog extends React.Component {
       `${Config.BACKEND}/inbox/${this.props.psid}`
     )
     const { data } = response
-    /*if (data && Object.keys(data).length > 0) {
+    if (data && Object.keys(data).length > 0) {
       this.setState({
         loading: false,
         error: false,
@@ -61,12 +61,7 @@ class ToolsDialog extends React.Component {
       this.setState({
         error: true,
       })
-    }*/
-    // TODO: remove debug
-    this.setState({
-      loading: false,
-      inboxData: {"link":"/nui.beta.chatbotcnh/inbox/330449700718574/","senders":{"data":[{"name":"Langage De Requête Structurée","email":"1317068401673098@facebook.com","id":"1317068401673098"},{"name":"Chatbot CNH Beta","email":"267312947032250@facebook.com","id":"267312947032250"}]},"id":"t_725265727655052"}
-    })
+    }
   }
 
   async sendInbox(t) {

@@ -6,7 +6,7 @@ var ConfigProduction = {
   BACKEND: 'https://nuichatbot.herokuapp.com/tonghopevent'
 }
 
-var Config = ConfigProduction
+var Config = ConfigDebug
 var MODE = process.env.REACT_APP_MODE
 if (MODE === 'production')
   Config = ConfigProduction
