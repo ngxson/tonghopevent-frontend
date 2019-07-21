@@ -5,6 +5,8 @@ import Config from '../Config'
 import Utils from '../Utils'
 import Doc from '../components/Doc'
 import ToolsDialog from '../components/ToolsDialog'
+import DuplicateDocDialog from '../components/DuplicateDocDialog'
+import DuplicateHelper from '../DuplicateHelper'
 
 class Home extends React.Component {
   constructor(props) {
@@ -15,6 +17,9 @@ class Home extends React.Component {
       list: [],
       toolsDialogOpen: false,
       toolsDialogDoc: {},
+      duplicateHelper: new DuplicateHelper(),
+      duplicateDocDialog: null,
+      selectedDocID: '',
     }
     window.changeHeader('Quản lý dữ liệu - TongHopEvent')
   }
@@ -24,10 +29,16 @@ class Home extends React.Component {
   }
 
   async loadData() {
+    const duplicateHelper = new DuplicateHelper()
     const token = Utils.getToken()
     const res = await axios.get(`${Config.BACKEND}/feed?token=${token}`)
     Utils.checkError(res)
-    this.setState({loading: false, list: res.data})
+    res.data.forEach(doc => duplicateHelper.pushDoc(doc))
+    this.setState({
+      loading: false,
+      list: res.data,
+      duplicateHelper
+    })
   }
 
   handleChange = name => event => {
@@ -50,6 +61,13 @@ class Home extends React.Component {
     this.setState({
       toolsDialogOpen: true,
       toolsDialogDoc: doc
+    })
+  }
+
+  openDuplicateDocDialog(docs, docid) {
+    this.setState({
+      duplicateDocDialog: docs,
+      selectedDocID: docid,
     })
   }
 
@@ -78,6 +96,7 @@ class Home extends React.Component {
     </div>
 
     const { gotoPublish } = this.props
+    const { duplicateDocDialog, duplicateHelper, selectedDocID } = this.state
     const home = (
       <React.Fragment>
         <div style={classes.cardStyle}>
@@ -93,6 +112,8 @@ class Home extends React.Component {
               admin
               gotoPublish={gotoPublish}
               openToolsDialog={this.openToolsDialog.bind(this)}
+              openDuplicateDocDialog={this.openDuplicateDocDialog.bind(this)}
+              duplicateHelper={duplicateHelper}
             /> : null
           })}
         </div>
@@ -101,6 +122,11 @@ class Home extends React.Component {
           closeToolsDialog={() => this.setState({toolsDialogOpen: false})}
           name={this.state.toolsDialogDoc.name}
           psid={this.state.toolsDialogDoc.psid}
+        />
+        <DuplicateDocDialog
+          docs={duplicateDocDialog}
+          selectedDocID={selectedDocID}
+          closeDuplicateDocDialog={() => this.setState({duplicateDocDialog: null})}
         />
       </React.Fragment>
     )

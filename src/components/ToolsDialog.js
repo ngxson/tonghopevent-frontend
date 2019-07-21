@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 const TEMPLATES = [
   {
     desc: 'Thông báo trùng bài',
-    text: '⬢ Đã có người nhập thông tin của dự án / cuộc thi / sự kiện này. Không biết bạn có muốn bổ sung hay thay đổi gì không nhỉ? Nếu không, chúng mình sẽ xóa thông tin bạn đã nhập để không bị trùng với bài đã đăng.'
+    text: '⬢ Đã có người nhập thông tin của dự án / cuộc thi / sự kiện này. Không biết bạn có muốn bổ sung hay thay đổi gì không nhỉ?\n\nNếu không, chúng mình sẽ xóa thông tin bạn đã nhập để không bị trùng với bài đã đăng.'
   }, {
     desc: 'Báo bị xóa vì trùng',
     text: '⬢ Bài của bạn đã bị xóa do trùng với bài đã đăng trên fanpage.'
@@ -59,6 +59,7 @@ class ToolsDialog extends React.Component {
       })
     } else {
       this.setState({
+        loading: false,
         error: true,
       })
     }
@@ -66,11 +67,15 @@ class ToolsDialog extends React.Component {
 
   async sendInbox(t) {
     this.props.closeToolsDialog()
-    await Utils.makeRequest(
+    const res = await Utils.makeRequest(
       `${Config.BACKEND}/inbox/${this.props.psid}`,
-      { message: t.text }
+      'post', { message: t.text }
     )
-    toast('Đã gửi tin nhắn thành công!')
+    if (res.data && res.data.success) {
+      toast('Đã gửi tin nhắn thành công!')
+    } else {
+      toast('Có lỗi xảy ra, ko thể gửi tin nhắn')
+    }
   }
 
   _renderError() {
@@ -102,7 +107,7 @@ class ToolsDialog extends React.Component {
           <ListItemText primary={`💬 (Hiện các mẫu tin nhắn)`} />
         </ListItem>}
         {showTemplates && TEMPLATES.map((t, i) => {
-          return <ListItem button onClick={this.sendInbox.bind(this)} key={i}>
+          return <ListItem button onClick={() => this.sendInbox(t)} key={i}>
             <ListItemText primary={`💬 ${t.desc}`} />
           </ListItem>
         })}

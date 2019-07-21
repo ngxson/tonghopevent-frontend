@@ -12,6 +12,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Fab from '@material-ui/core/Fab'
 import Divider from '@material-ui/core/Divider'
 import CheckIcon from '@material-ui/icons/Check'
+import WarningIcon from '@material-ui/icons/Warning'
 import './Doc.css'
 
 class Doc extends React.Component {
@@ -117,6 +118,11 @@ class Doc extends React.Component {
       : `#dự_án_ở_${doc.location.replace(/\s+/g, '_')}`
   }
 
+  getImageUrl() {
+    const { doc } = this.props
+    return doc.image ? 'https://drive.google.com/uc?export=view&id=' + doc.image[0] : null
+  }
+
   _renderNonAdminInfo() {
     const { doc } = this.props
     return <p style={{backgroundColor: '#eee', padding: '10px', width: '100%'}}>
@@ -129,13 +135,45 @@ class Doc extends React.Component {
     </p>
   }
 
-  getImageUrl() {
-    const { doc } = this.props
-    return doc.image ? 'https://drive.google.com/uc?export=view&id=' + doc.image[0] : null
+  _renderDuplicatedWarningIcon() {
+    const { doc, duplicateHelper, openDuplicateDocDialog } = this.props
+    if (!duplicateHelper || doc.approved) return null
+    const duplicatedDocs = duplicateHelper.checkDoc(doc)
+    if (!duplicatedDocs) return null
+    else return (
+      <Fab
+        size="small"
+        color="primary"
+        style={{marginRight: '15px'}}
+        onClick={() => openDuplicateDocDialog(duplicatedDocs, doc.id)}
+      >
+        <WarningIcon />
+      </Fab>
+    )
   }
 
-  openImageView() {
-    window.open(this.getImageUrl())
+  _renderPostContent() {
+    const { doc } = this.props
+    return (
+      <React.Fragment>
+        <p>{this.generateLocationTag(doc)} {doc.type.join(' ')}</p>
+        <p>{this.nl2br(doc.description)}</p>
+        <p>
+          ● Link facebook: {Utils.cleanFBLink(doc.linkfb)}<br/>
+          {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted.join(', ')}<br/></span>}
+          {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
+          {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
+        </p>
+        {this.props.admin && <p>TrackID:{doc.psid}:{doc.id}</p>}
+        <p>(Gửi lúc {Utils.getTimeStr(doc.created)} ngày {Utils.getDateStr(doc.created)})</p>
+        {
+          (!!doc.image || !!doc.feedback) &&
+          <p><b>== Thông tin riêng ==</b></p>
+        }
+        {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
+        {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
+      </React.Fragment>
+    )
   }
 
   render() {
@@ -150,39 +188,26 @@ class Doc extends React.Component {
     )
 
     const content = <div>
-      <Linkify componentDecorator={componentDecorator}>
-        <div style={isExpanded ? null : {maxHeight: '315px', overflow:'hidden', position: 'relative'}} className={isExpanded ? null : 'fade-out'}>
-          {!this.props.admin && this._renderNonAdminInfo()}
-          <p>
-            {doc.approved && <Fab size="small" color="primary" style={{marginRight: '15px'}} disabled>
-              <CheckIcon />
-            </Fab>}
-            <b>-- {doc.name} --</b>
-          </p>
-          <p>{this.generateLocationTag(doc)} {doc.type.join(' ')}</p>
-          <p>{this.nl2br(doc.description)}</p>
-          <p>
-            ● Link facebook: {Utils.cleanFBLink(doc.linkfb)}<br/>
-            {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted.join(', ')}<br/></span>}
-            {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
-            {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
-          </p>
-          {this.props.admin && <p>TrackID:{doc.psid}:{doc.id}</p>}
-          {
-            (!!doc.image || !!doc.feedback) &&
-            <p><b>== Thông tin riêng ==</b></p>
-          }
-          {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
-          {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
-        </div>
-        {this.props.admin && <div>
-          <center>
-            <Button onClick={() => this.setState({isExpanded: !isExpanded})}>
-              {isExpanded ? 'Thu gọn' : 'Hiện thêm ...'}
-            </Button>
-          </center>
-        </div>}
-      </Linkify>
+      <div style={isExpanded ? null : {maxHeight: '315px', overflow:'hidden', position: 'relative'}} className={isExpanded ? null : 'fade-out'}>
+        {!this.props.admin && this._renderNonAdminInfo()}
+        <p>
+          {doc.approved && <Fab size="small" color="primary" style={{marginRight: '15px'}} disabled>
+            <CheckIcon />
+          </Fab>}
+          {this._renderDuplicatedWarningIcon()}
+          <b>-- {doc.name} --</b>
+        </p>
+        <Linkify componentDecorator={componentDecorator}>
+          {this._renderPostContent()}
+        </Linkify>
+      </div>
+      {this.props.admin && <div>
+        <center>
+          <Button onClick={() => this.setState({isExpanded: !isExpanded})}>
+            {isExpanded ? 'Thu gọn' : 'Hiện thêm ...'}
+          </Button>
+        </center>
+      </div>}
       <Divider />
       {this.props.admin &&
         <React.Fragment>
@@ -197,9 +222,6 @@ class Doc extends React.Component {
                 {this.state.isCopied ? '(Đã copy)' : 'Copy'}
               </Button>
             </CopyToClipboard>
-            {/*doc.image &&
-              <Button variant="outlined" onClick={this.openImageView.bind(this)} color='primary'>Lấy ảnh</Button>
-            */}
             {publishAction &&
               <Button variant="outlined" onClick={() => {gotoPublish({
                 caption: copyContent,

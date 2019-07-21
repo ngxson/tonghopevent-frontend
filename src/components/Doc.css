@@ -6,6 +6,7 @@
     left: 0;
     right: 0;
     background-image: linear-gradient( rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100% );
+    pointer-events: none;
 }
 
 .approved .fade-out:after {

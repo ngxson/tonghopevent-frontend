@@ -41,7 +41,7 @@ class Utils {
   }
   
   static getDateStr(timestamp) {
-    let date = new Date(timestamp)
+    let date = new Date(timestamp || 1)
     let d = date.getDate()
     let m = date.getMonth() + 1
     let y = date.getFullYear()
@@ -49,7 +49,7 @@ class Utils {
   }
 
   static getTimeStr(timestamp) {
-    let date = new Date(timestamp)
+    let date = new Date(timestamp || 1)
     let hh = date.getHours()
     let mm = date.getMinutes()
     return `${hh < 10 ? '0' : ''}${hh}h${mm < 10 ? '0' : ''}${mm}`
@@ -64,10 +64,10 @@ class Utils {
     else return _id[1]
   }
 
-  static makeRequest(url, opts = {}) {
+  static makeRequest(url, method = 'get', payload = {}) {
     const token = Utils.getLocalStorage('token')
-    opts.url = url + (url.indexOf('?') !== -1 ? '&' : '?') + 'token=' + token
-    return axios(opts)
+    const _url = url + (url.indexOf('?') !== -1 ? '&' : '?') + 'token=' + token
+    return axios[method](_url, payload)
   }
 
   static cleanFBLink(url = '') {
