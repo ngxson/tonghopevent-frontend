@@ -1,5 +1,5 @@
 
-var ConfigDebug = {
+/*var ConfigDebug = {
   BACKEND: 'http://localhost:5000/tonghopevent'
 }
 var ConfigProduction = {
@@ -9,6 +9,10 @@ var ConfigProduction = {
 var Config = ConfigDebug
 var MODE = process.env.REACT_APP_MODE
 if (MODE === 'production')
-  Config = ConfigProduction
+  Config = ConfigProduction*/
+
+const Config = {
+  BACKEND: 'https://nuichatbot.herokuapp.com/tonghopevent'
+}
 
 export default Config

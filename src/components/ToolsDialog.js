@@ -24,7 +24,11 @@ const TEMPLATES = [
   }, {
     desc: 'Báo dự án có lợi nhuận',
     text: '⬢ Xin chào bạn,\n\nDự án / cuộc thi / sự kiện của bạn được điều hành bởi một tổ chức / cá nhân hoạt động có lợi nhuận. Dựa theo Điều khoản sử dụng của chúng mình, bài của bạn phải trả phí 100.000 VNĐ để có thể được đăng bài lên fanpage nhé.\n\nHãy tham khảo Điều khoản sử dụng của fanpage tại đây: https://sites.google.com/view/tonghopevent'
-  }
+  },
+  {
+    desc: 'Nhắn điền rõ hơn',
+    text: '⬢ Admin đã xem bài viết của bạn. Tuy nhiên, do bài viết của bạn còn thiếu khá nhiều thông tin, nên chúng mình không thể duyệt được. Bạn hãy điền lại form với đầy đủ thông tin hơn nhé!\n\nHãy tham khảo ví dụ sau: https://bit.ly/2TZKbee'
+  },
 ]
 
 class ToolsDialog extends React.Component {
