@@ -10,6 +10,7 @@ class DuplicateHelper {
    */
   pushDoc(doc) {
     const uname = Utils.extractFacebookUsername(doc.linkfb)
+    if (!uname) return null
     if (this.seen[uname]) {
       this.seen[uname].push(doc)
     } else {
