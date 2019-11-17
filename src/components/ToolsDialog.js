@@ -101,8 +101,8 @@ class ToolsDialog extends React.Component {
         <DialogContentText id="alert-dialog-description">Gửi tin nhắn có nội dung như sau:<br/>{sendInboxData.text}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => this.sendInbox(sendInboxData)} color="primary"> GỬI </Button>
         <Button onClick={handleClose} color="primary"> Quay lại </Button>
+        <Button onClick={() => this.sendInbox(sendInboxData)} color="primary"> GỬI </Button>
       </DialogActions>
     </Dialog>
   }

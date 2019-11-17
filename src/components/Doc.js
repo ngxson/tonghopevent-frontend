@@ -13,6 +13,7 @@ import Fab from '@material-ui/core/Fab'
 import Divider from '@material-ui/core/Divider'
 import CheckIcon from '@material-ui/icons/Check'
 import WarningIcon from '@material-ui/icons/Warning'
+import NoteEditDialog from './NoteEditDialog'
 import './Doc.css'
 
 class Doc extends React.Component {
@@ -21,9 +22,10 @@ class Doc extends React.Component {
     this.props = props
     this.state = {
       loading: false,
+      isNoteEditOpen: false,
       isCopied: false,
       isExpanded: !this.props.admin,
-      copyContent: this.props.admin ? this.getCopyContent() : ''
+      copyContent: this.props.admin ? this.getCopyContent() : '',
     }
 
     if (this.props.doc && this.props.doc.linkfb) {
@@ -69,15 +71,13 @@ class Doc extends React.Component {
     }
   }
 
-  async toggleApproved() {
+  async updateDocField(field, val, url, data) {
     this.setState({loading: true})
     const {doc} = this.props
-    const approved = !doc.approved
-    const token = Utils.getLocalStorage('token')
-    const res = await axios.post(`${Config.BACKEND}/doc/${doc.id}/approved?token=${token}`, {approved})
-    const newDoc = JSON.parse(JSON.stringify(doc))
-    newDoc.approved = approved
+    const res = await axios.post(url, data)
     if (res.data.success) {
+      const newDoc = JSON.parse(JSON.stringify(doc))
+      newDoc[field] = val
       this.props.setDoc(this.props.i, newDoc)
     } else {
       window.showAlert({
@@ -86,6 +86,25 @@ class Doc extends React.Component {
       })
     }
     this.setState({loading: false})
+  }
+
+  async toggleApproved() {
+    const {doc} = this.props
+    const approved = !doc.approved
+    const token = Utils.getLocalStorage('token')
+    await this.updateDocField(
+      'approved', approved,
+      `${Config.BACKEND}/doc/${doc.id}/approved?token=${token}`, {approved}
+    )
+  }
+
+  async updateComment(cmt) {
+    const {doc} = this.props
+    const token = Utils.getLocalStorage('token')
+    await this.updateDocField(
+      'comment', cmt || '',
+      `${Config.BACKEND}/doc/${doc.id}/comment?token=${token}`, {comment: cmt}
+    )
   }
 
   getCopyContent() {
@@ -178,7 +197,7 @@ class Doc extends React.Component {
 
   render() {
     const { doc } = this.props
-    const { isExpanded, copyContent, publishAction } = this.state
+    const { isExpanded, copyContent, publishAction, isNoteEditOpen } = this.state
     const gotoPublish = this.props.gotoPublish || (() => {})
 
     const componentDecorator = (href, text, key) => (
@@ -186,6 +205,8 @@ class Doc extends React.Component {
         {text}
       </a>
     )
+
+    {/* TEXT CONTENT (visible for all) */}
 
     const content = <div>
       <div style={isExpanded ? null : {maxHeight: '315px', overflow:'hidden', position: 'relative'}} className={isExpanded ? null : 'fade-out'}>
@@ -210,9 +231,13 @@ class Doc extends React.Component {
         </center>
       </div>}
       <Divider />
+
+      {/* ADMIN BUTTONS */}
+
       {this.props.admin &&
         <React.Fragment>
           {!this.state.loading ? <div>
+            {doc.comment && doc.comment.trim().length > 0 && <p><b>Ghi chú:</b> {this.nl2br(doc.comment)}</p>}
             <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>
             <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>Tick</Button>
             <CopyToClipboard
@@ -230,6 +255,7 @@ class Doc extends React.Component {
                 fbusername: this.fbusername,
               }, publishAction)}} color='primary'>Đăng bài</Button>
             }
+            <Button variant="outlined" onClick={() => this.setState({isNoteEditOpen: true})} color='primary'>Ghi chú</Button>
             <Button variant="outlined" onClick={() => this.props.openToolsDialog(doc)} color='primary'>+</Button>
           </div>
           : <center>
@@ -239,6 +265,8 @@ class Doc extends React.Component {
       }
     </div>
 
+    {/* CARD BACKGROUND */}
+
     return (
       <div style={{paddingBottom: '20px'}}>
         <Card>
@@ -247,8 +275,12 @@ class Doc extends React.Component {
             className={(doc.approved && this.props.admin) ? 'approved' : null}
           >
             {content}
-          </CardContent>        
+          </CardContent>
         </Card>
+        {isNoteEditOpen && <NoteEditDialog doc={doc} onClose={(cmt) => {
+          this.setState({isNoteEditOpen: false})
+          if (cmt !== false) this.updateComment(cmt)
+        }}/>}
       </div>
     )
   }
