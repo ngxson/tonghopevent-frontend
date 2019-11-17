@@ -122,6 +122,7 @@ class Home extends React.Component {
           closeToolsDialog={() => this.setState({toolsDialogOpen: false})}
           name={this.state.toolsDialogDoc.name}
           psid={this.state.toolsDialogDoc.psid}
+          doc={this.state.toolsDialogDoc}
         />
         <DuplicateDocDialog
           docs={duplicateDocDialog}

@@ -196,6 +196,7 @@ class Doc extends React.Component {
           </Fab>}
           {this._renderDuplicatedWarningIcon()}
           <b>-- {doc.name} --</b>
+          {doc.plan && <p><span className='doc-plan'>█ Gói {doc.plan.toUpperCase()}</span></p>}
         </p>
         <Linkify componentDecorator={componentDecorator}>
           {this._renderPostContent()}

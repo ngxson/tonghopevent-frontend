@@ -10,6 +10,7 @@ import Utils from '../Utils'
 import Config from '../Config'
 import PropTypes from 'prop-types'
 import { toast } from 'react-toastify'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 const TEMPLATES = [
   {
@@ -35,6 +36,7 @@ class ToolsDialog extends React.Component {
       error: false,
       showTemplates: false,
       inboxData: {},
+      isLinkCopied: false,
     }
   }
 
@@ -43,6 +45,7 @@ class ToolsDialog extends React.Component {
     closeToolsDialog: PropTypes.func.isRequired,
     name: PropTypes.string,
     psid: PropTypes.string,
+    doc: PropTypes.any.isRequired,
   }
 
   async fetchData() {
@@ -92,7 +95,7 @@ class ToolsDialog extends React.Component {
   }
 
   _renderContent() {
-    const { inboxData, showTemplates } = this.state
+    const { inboxData, showTemplates, isLinkCopied } = this.state
 
     return (
       <List>
@@ -111,6 +114,15 @@ class ToolsDialog extends React.Component {
             <ListItemText primary={`💬 ${t.desc}`} />
           </ListItem>
         })}
+        <Divider />
+          <CopyToClipboard
+            text={`${window.location.protocol}//${window.location.host}/data/#/view/${this.props.doc.id}`}
+            onCopy={() => this.setState({isLinkCopied: true})}
+          >
+            <ListItem button>
+              <ListItemText primary={isLinkCopied ? "(Đã copy link)" : "Copy link bài viết"} />
+            </ListItem>
+          </CopyToClipboard>
         <Divider />
         <ListItem button onClick={this.props.closeToolsDialog}>
           <ListItemText primary="Quay lại" />
