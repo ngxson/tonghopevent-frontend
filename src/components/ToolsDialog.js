@@ -4,7 +4,11 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Button from '@material-ui/core/Button'
 import Divider from '@material-ui/core/Divider'
 import Utils from '../Utils'
 import Config from '../Config'
@@ -38,7 +42,8 @@ class ToolsDialog extends React.Component {
     this.state = {
       loading: true,
       error: false,
-      showTemplates: false,
+      showTemplates: true,
+      sendInboxData: null,
       inboxData: {},
       isLinkCopied: false,
     }
@@ -53,7 +58,7 @@ class ToolsDialog extends React.Component {
   }
 
   async fetchData() {
-    this.setState({ error: false, loading: true, showTemplates: false })
+    this.setState({ error: false, loading: true, showTemplates: true, isLinkCopied: false })
     const response = await Utils.makeRequest(
       `${Config.BACKEND}/inbox/${this.props.psid}`
     )
@@ -73,6 +78,7 @@ class ToolsDialog extends React.Component {
   }
 
   async sendInbox(t) {
+    this.setState({sendInboxData: null})
     this.props.closeToolsDialog()
     const res = await Utils.makeRequest(
       `${Config.BACKEND}/inbox/${this.props.psid}`,
@@ -83,6 +89,22 @@ class ToolsDialog extends React.Component {
     } else {
       toast('Có lỗi xảy ra, ko thể gửi tin nhắn')
     }
+  }
+
+  _renderSendInboxDialogAsk() {
+    const { sendInboxData } = this.state;
+    const handleClose = () => this.setState({sendInboxData: null});
+    if (!sendInboxData) return null;
+    else return <Dialog open={!!sendInboxData} onClose={handleClose}>
+      <DialogTitle id="alert-dialog-title">{sendInboxData.desc}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">Gửi tin nhắn có nội dung như sau:<br/>{sendInboxData.text}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => this.sendInbox(sendInboxData)} color="primary"> GỬI </Button>
+        <Button onClick={handleClose} color="primary"> Quay lại </Button>
+      </DialogActions>
+    </Dialog>
   }
 
   _renderError() {
@@ -114,7 +136,7 @@ class ToolsDialog extends React.Component {
           <ListItemText primary={`💬 (Hiện các mẫu tin nhắn)`} />
         </ListItem>}
         {showTemplates && TEMPLATES.map((t, i) => {
-          return <ListItem button onClick={() => this.sendInbox(t)} key={i}>
+          return <ListItem button onClick={() => this.setState({ sendInboxData: t })} key={i}>
             <ListItemText primary={`💬 ${t.desc}`} />
           </ListItem>
         })}
@@ -139,17 +161,20 @@ class ToolsDialog extends React.Component {
     const { name, open } = this.props
 
     return (
-      <Dialog
-        open={open}
-        onEnter={this.fetchData.bind(this)}
-        aria-labelledby="simple-dialog-title"
-      >
-        <DialogTitle id="simple-dialog-title">{name ? name.substr(0,24) : ''}</DialogTitle>
-        {this.state.loading
-          ? <center><CircularProgress /></center>
-          : this.state.error ? this._renderError() : this._renderContent()
-        }
-      </Dialog>
+      <React.Fragment>
+        {this._renderSendInboxDialogAsk()}
+        <Dialog
+          open={open}
+          onEnter={this.fetchData.bind(this)}
+          aria-labelledby="simple-dialog-title"
+        >
+          <DialogTitle id="simple-dialog-title">{name ? name.substr(0,24) : ''}</DialogTitle>
+          {this.state.loading
+            ? <center><CircularProgress /></center>
+            : this.state.error ? this._renderError() : this._renderContent()
+          }
+        </Dialog>
+      </React.Fragment>
     )
   }
 }

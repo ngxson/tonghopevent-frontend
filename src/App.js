@@ -64,9 +64,9 @@ class Main extends React.Component {
 
   Copyright = () => {
     return <center>
-      Developed by&nbsp;
-      <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b>&nbsp;
-      - v4.5
+      Technology provided by&nbsp;
+      <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b><br/>
+      Version 4.6
       <br/><br/>
     </center>
   }
