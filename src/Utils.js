@@ -1,6 +1,14 @@
 
 import axios from 'axios'
 
+const ORG_CODE = {
+  'f1': 'Nhóm HS, SV',
+  'f2': 'CLB thuộc trường học',
+  'f3': 'Trường công lập',
+  'f4': 'Tổ chức phi lợi nhuận',
+  'p1': 'Tổ chức có lợi nhuận',
+}
+
 class Utils {
   static getToken() {
     const token = Utils.getLocalStorage('token')
@@ -73,6 +81,10 @@ class Utils {
 
   static cleanFBLink(url = '') {
     return url.replace(/[&?](__|eid|fref)[^&?\s]+/g, '')
+  }
+
+  static getOrgName(doc) {
+    return ORG_CODE[doc.org]
   }
 }
 

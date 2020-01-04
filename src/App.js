@@ -66,7 +66,7 @@ class Main extends React.Component {
     return <center>
       Technology provided by&nbsp;
       <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b><br/>
-      Version 4.6
+      Version 4.7
       <br/><br/>
     </center>
   }

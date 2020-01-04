@@ -184,13 +184,12 @@ class Doc extends React.Component {
           {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
         </p>
         {this.props.admin && <p>TrackID:{doc.psid}:{doc.id}</p>}
-        <p>(Gửi lúc {Utils.getTimeStr(doc.created)} ngày {Utils.getDateStr(doc.created)})</p>
-        {
-          (!!doc.image || !!doc.feedback) &&
-          <p><b>== Thông tin riêng ==</b></p>
-        }
-        {!!doc.image && <p>● Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
-        {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
+        {!!doc.image && <p>Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
+        <p>
+          (Gửi lúc {Utils.getTimeStr(doc.created)} ngày {Utils.getDateStr(doc.created)})
+          {!!doc.org && <span><br/>Đơn vị tổ chức: {Utils.getOrgName(doc)}</span>}
+        </p>
+        {(!this.props.admin && !!doc.feedback) && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
       </React.Fragment>
     )
   }
@@ -206,7 +205,7 @@ class Doc extends React.Component {
       </a>
     )
 
-    {/* TEXT CONTENT (visible for all) */}
+    /* TEXT CONTENT (visible for all) */
 
     const content = <div>
       <div style={isExpanded ? null : {maxHeight: '315px', overflow:'hidden', position: 'relative'}} className={isExpanded ? null : 'fade-out'}>
@@ -237,7 +236,8 @@ class Doc extends React.Component {
       {this.props.admin &&
         <React.Fragment>
           {!this.state.loading ? <div>
-            {doc.comment && doc.comment.trim().length > 0 && <p><b>Ghi chú:</b> {this.nl2br(doc.comment)}</p>}
+            {doc.comment && doc.comment.trim().length > 0 && <p><b>● Ghi chú:</b> {this.nl2br(doc.comment)}</p>}
+            {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
             <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>
             <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>Tick</Button>
             <CopyToClipboard
@@ -265,7 +265,7 @@ class Doc extends React.Component {
       }
     </div>
 
-    {/* CARD BACKGROUND */}
+    /* CARD BACKGROUND */
 
     return (
       <div style={{paddingBottom: '20px'}}>
