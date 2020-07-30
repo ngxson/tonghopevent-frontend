@@ -10,29 +10,37 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button'
 import Divider from '@material-ui/core/Divider'
+import TextField from '@material-ui/core/TextField'
 import Utils from '../Utils'
 import Config from '../Config'
 import PropTypes from 'prop-types'
 import { toast } from 'react-toastify'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
+import './ToolsDialog.css'
+
+const copyObj = (obj) => JSON.parse(JSON.stringify(obj))
 
 const TEMPLATES = [
   {
     desc: 'Thông báo trùng bài',
-    text: '⬢ Đã có người nhập thông tin của dự án / cuộc thi / sự kiện này. Không biết bạn có muốn bổ sung hay thay đổi gì không nhỉ?\n\nNếu không, chúng mình sẽ xóa thông tin bạn đã nhập để không bị trùng với bài đã đăng.'
+    text: 'Đã có người nhập thông tin của dự án / cuộc thi / sự kiện này. Không biết bạn có muốn bổ sung hay thay đổi gì không nhỉ?\n\nNếu không, chúng mình sẽ xóa thông tin bạn đã nhập để không bị trùng với bài đã đăng.'
   }, {
     desc: 'Báo bị xóa vì trùng',
-    text: '⬢ Bài của bạn đã bị xóa do trùng với bài đã đăng trên fanpage.'
+    text: 'Bài của bạn đã bị xóa do trùng với bài đã đăng trên fanpage.'
   }, {
     desc: 'Báo bị xóa vì ko phù hợp',
-    text: '⬢ Xin chào bạn,\n\nDự án / cuộc thi / sự kiện của bạn đã bị xóa do không phù hợp với Điều khoản sử dụng của chúng mình.\n\nHãy tham khảo Điều khoản sử dụng của fanpage tại đây: https://sites.google.com/view/tonghopevent'
+    text: 'Xin chào bạn,\n\nDự án / cuộc thi / sự kiện của bạn đã bị xóa do không phù hợp với Điều khoản sử dụng của chúng mình.\n\nHãy tham khảo Điều khoản sử dụng của fanpage tại đây: https://sites.google.com/view/tonghopevent'
   }, {
     desc: 'Báo dự án có lợi nhuận',
-    text: '⬢ Xin chào bạn,\n\nDự án / cuộc thi / sự kiện của bạn được điều hành bởi một tổ chức / cá nhân hoạt động có lợi nhuận. Dựa theo Điều khoản sử dụng của chúng mình, bài của bạn phải trả phí 100.000 VNĐ để có thể được đăng bài lên fanpage nhé.\n\nHãy tham khảo Điều khoản sử dụng của fanpage tại đây: https://sites.google.com/view/tonghopevent'
+    text: 'Xin chào bạn,\n\nDự án / cuộc thi / sự kiện của bạn được điều hành bởi một tổ chức / cá nhân hoạt động có lợi nhuận. Dựa theo Điều khoản sử dụng của chúng mình, bài của bạn phải trả phí 100.000 VNĐ để có thể được đăng bài lên fanpage nhé.\n\nHãy tham khảo Điều khoản sử dụng của fanpage tại đây: https://sites.google.com/view/tonghopevent'
   },
   {
-    desc: 'Nhắn điền rõ hơn',
-    text: '⬢ Admin đã xem bài viết của bạn. Tuy nhiên, do bài viết của bạn còn thiếu khá nhiều thông tin, nên chúng mình không thể duyệt được. Bạn hãy điền lại form với đầy đủ thông tin hơn nhé!\n\nHãy tham khảo ví dụ sau: https://bit.ly/2TZKbee'
+    desc: 'Báo thiếu thông tin',
+    text: 'Admin đã xem bài viết của bạn. Tuy nhiên, do bài viết của bạn còn thiếu thông tin, như giới thiệu, ý nghĩa dự án / cuộc thi / sự kiện, nên chúng mình chưa thể phê duyệt được. Bạn hãy điền lại form với đầy đủ thông tin hơn nhé!\n\nHãy tham khảo ví dụ sau: https://bit.ly/2TZKbee'
+  },
+  {
+    desc: 'Điền lại (không paste link)',
+    text: 'Admin đã xem bài viết của bạn. Tuy nhiên, chúng mình không thể xử lý nếu bạn chỉ copy-paste mỗi link bài viết. Bạn hãy điền lại form thật rõ ràng, bao gồm cả phần giới thiệu, ý nghĩa dự án / cuộc thi / sự kiện nhé.\n\nHãy tham khảo ví dụ sau: https://bit.ly/2TZKbee'
   },
 ]
 
@@ -77,12 +85,13 @@ class ToolsDialog extends React.Component {
     }
   }
 
-  async sendInbox(t) {
+  async sendInbox() {
+    const inboxData = copyObj(this.state.sendInboxData)
     this.setState({sendInboxData: null})
     this.props.closeToolsDialog()
     const res = await Utils.makeRequest(
       `${Config.BACKEND}/inbox/${this.props.psid}`,
-      'post', { message: t.text }
+      'post', { message: '⬢ ' + inboxData.text }
     )
     if (res.data && res.data.success) {
       toast('Đã gửi tin nhắn thành công!')
@@ -98,11 +107,27 @@ class ToolsDialog extends React.Component {
     else return <Dialog open={!!sendInboxData} onClose={handleClose}>
       <DialogTitle id="alert-dialog-title">{sendInboxData.desc}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">Gửi tin nhắn có nội dung như sau:<br/>{sendInboxData.text}</DialogContentText>
+        <DialogContentText id="alert-dialog-description">
+          Gửi tin nhắn có nội dung như sau (có thể sửa):<br/><br/>
+          <TextField
+            multiline
+            rowsMax="20"
+            value={sendInboxData.text}
+            onChange={event => {this.setState({
+              sendInboxData: {
+                ...sendInboxData,
+                text: event.target.value,
+              }
+            })}}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          />
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="primary"> Quay lại </Button>
-        <Button onClick={() => this.sendInbox(sendInboxData)} color="primary"> GỬI </Button>
+        <Button onClick={() => this.sendInbox()} color="primary"> GỬI </Button>
       </DialogActions>
     </Dialog>
   }
@@ -166,6 +191,8 @@ class ToolsDialog extends React.Component {
         <Dialog
           open={open}
           onEnter={this.fetchData.bind(this)}
+          onBackdropClick={this.props.closeToolsDialog}
+          className="tools-dialog"
           aria-labelledby="simple-dialog-title"
         >
           <DialogTitle id="simple-dialog-title">{name ? name.substr(0,24) : ''}</DialogTitle>
