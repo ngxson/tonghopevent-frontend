@@ -22,12 +22,9 @@ const copyObj = (obj) => JSON.parse(JSON.stringify(obj))
 
 const TEMPLATES = [
   {
-    desc: 'Thông báo trùng bài',
+    desc: 'Báo trùng bài',
     text: 'Đã có người nhập thông tin của dự án / cuộc thi / sự kiện này. Không biết bạn có muốn bổ sung hay thay đổi gì không nhỉ?\n\nNếu không, chúng mình sẽ xóa thông tin bạn đã nhập để không bị trùng với bài đã đăng.'
-  }, {
-    desc: 'Báo bị xóa vì trùng',
-    text: 'Bài của bạn đã bị xóa do trùng với bài đã đăng trên fanpage.'
-  }, {
+  },{
     desc: 'Báo bị xóa vì ko phù hợp',
     text: 'Xin chào bạn,\n\nDự án / cuộc thi / sự kiện của bạn đã bị xóa do không phù hợp với Điều khoản sử dụng của chúng mình.\n\nHãy tham khảo Điều khoản sử dụng của fanpage tại đây: https://sites.google.com/view/tonghopevent'
   }, {
@@ -96,19 +93,28 @@ class ToolsDialog extends React.Component {
     if (res.data && res.data.success) {
       toast('Đã gửi tin nhắn thành công!')
     } else {
-      toast('Có lỗi xảy ra, ko thể gửi tin nhắn')
+      toast('⚠️⚠️⚠️⚠️ Có lỗi xảy ra, ko thể gửi tin nhắn ⚠️⚠️⚠️⚠️')
     }
+  }
+
+  goToPageInbox() {
+    window.open(`https://fb.com${this.state.inboxData.link}`, '_blank')
   }
 
   _renderSendInboxDialogAsk() {
     const { sendInboxData } = this.state;
+    const isWithin24HWindow = (Date.now() - this.props.doc.created) < (86400 * 1000)
     const handleClose = () => this.setState({sendInboxData: null});
     if (!sendInboxData) return null;
     else return <Dialog open={!!sendInboxData} onClose={handleClose}>
       <DialogTitle id="alert-dialog-title">{sendInboxData.desc}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          Gửi tin nhắn có nội dung như sau (có thể sửa):<br/><br/>
+          {
+            isWithin24HWindow
+             ? 'Gửi tin nhắn có nội dung như sau (có thể sửa):'
+             : 'Không thể tự động gửi tin nhắn. Hãy copy-paste và inbox thủ công:'
+          }<br/><br/>
           <TextField
             multiline
             rowsMax="20"
@@ -127,7 +133,13 @@ class ToolsDialog extends React.Component {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="primary"> Quay lại </Button>
-        <Button onClick={() => this.sendInbox()} color="primary"> GỬI </Button>
+        {!isWithin24HWindow
+          && <Button onClick={() => Utils.copyTextToClipboard(sendInboxData.text)} color="primary"> Copy tin nhắn </Button>
+        }
+        {isWithin24HWindow
+          ? <Button onClick={() => this.sendInbox()} color="primary"> GỬI </Button>
+          : <Button onClick={() => this.goToPageInbox()} color="primary"> Đi tới inbox </Button>
+        }
       </DialogActions>
     </Dialog>
   }
@@ -150,7 +162,7 @@ class ToolsDialog extends React.Component {
 
     return (
       <List>
-        <ListItem button onClick={() => window.open(`https://fb.com${inboxData.link}`, '_blank')}>
+        <ListItem button onClick={this.goToPageInbox.bind(this)}>
           <ListItemText
             primary="Đi tới inbox"
             secondary={`Tên FB: ${inboxData.senders.data[0].name}`}
