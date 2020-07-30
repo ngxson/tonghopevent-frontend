@@ -46,31 +46,6 @@ class Doc extends React.Component {
     doc: PropTypes.object.isRequired,
   }
 
-  async askDeleteDoc() {
-    window.showAlert({
-      title: 'Xác nhận xoá',
-      text: 'Xoá "' + this.props.doc.name + '" ? Người điền form sẽ KHÔNG nhận đc thông báo xóa.',
-      onClickOK: this.deleteDoc.bind(this),
-      showCancel: true
-    })
-  }
-
-  async deleteDoc() {
-    const {doc} = this.props
-    this.setState({loading: true})
-    const token = Utils.getLocalStorage('token')
-    const res = await axios.delete(`${Config.BACKEND}/doc/${doc.id}?token=${token}`)
-    if (res.data.success) {
-      this.props.setDoc(this.props.i, null)
-    } else {
-      this.setState({loading: false})
-      window.showAlert({
-        title: 'ERROR',
-        text: 'Message: ' + res.data.error
-      })
-    }
-  }
-
   async updateDocField(field, val, url, data) {
     this.setState({loading: true})
     const {doc} = this.props
@@ -86,6 +61,16 @@ class Doc extends React.Component {
       })
     }
     this.setState({loading: false})
+  }
+
+  async toggleTrashDoc() {
+    const { doc } = this.props
+    const trashed = !doc.trashed
+    const token = Utils.getLocalStorage('token')
+    await this.updateDocField(
+      'trashed', trashed,
+      `${Config.BACKEND}/doc/${doc.id}/trashed?token=${token}`, {trashed}
+    )
   }
 
   async toggleApproved() {
@@ -144,11 +129,16 @@ class Doc extends React.Component {
 
   _renderNonAdminInfo() {
     const { doc } = this.props
-    return <p style={{backgroundColor: '#eee', padding: '10px', width: '100%'}}>
+    return <p style={{
+      backgroundColor: doc.trashed ? '#ffa3a3' : '#eee',
+      padding: '10px',
+      width: '100%'}}
+    >
       <center>
-        {doc.approved
-          ? 'Bài viết này đã được duyệt và sẽ sớm đc đăng lên fanpage'
-          : 'Bài viết này đang đợi để được kiểm duyệt'
+        {doc.trashed ? 'Bài viết này đã bị từ chối'
+          : (doc.approved
+            ? 'Bài viết này đã được duyệt và sẽ sớm đc đăng lên fanpage'
+            : 'Bài viết này đang đợi để được kiểm duyệt')
         }
       </center>
     </p>
@@ -194,7 +184,7 @@ class Doc extends React.Component {
     )
   }
 
-  render() {
+  _renderMainCard() {
     const { doc } = this.props
     const { isExpanded, copyContent, publishAction, isNoteEditOpen } = this.state
     const gotoPublish = this.props.gotoPublish || (() => {})
@@ -238,16 +228,8 @@ class Doc extends React.Component {
           {!this.state.loading ? <div>
             {doc.comment && doc.comment.trim().length > 0 && <p><b>● Ghi chú:</b> {this.nl2br(doc.comment)}</p>}
             {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
-            <Button variant="outlined" onClick={this.askDeleteDoc.bind(this)} color='primary'>Xóa</Button>
+            <Button variant="outlined" onClick={this.toggleTrashDoc.bind(this)} color='primary'>Xóa</Button>
             <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>Tick</Button>
-            <CopyToClipboard
-              text={copyContent}
-              onCopy={() => this.setState({isCopied: true})}
-            >
-              <Button variant="outlined" color='primary'>
-                {this.state.isCopied ? '(Đã copy)' : 'Copy'}
-              </Button>
-            </CopyToClipboard>
             {publishAction &&
               <Button variant="outlined" onClick={() => {gotoPublish({
                 caption: copyContent,
@@ -283,6 +265,30 @@ class Doc extends React.Component {
         }}/>}
       </div>
     )
+  }
+
+  _renderTrashedDoc() {
+    const { doc } = this.props
+    if (this.state.loading) return <center><CircularProgress /></center>
+    else return <p>
+      <b>(Đã xóa)</b> {doc.name} &nbsp;&nbsp;&nbsp;
+      <Button
+        variant="outlined"
+        size="small"
+        color="primary"
+        className="restore-btn"
+        onClick={this.toggleTrashDoc.bind(this)}
+      >
+        Khôi phục
+      </Button>
+    </p>
+  }
+
+  render() {
+    const { doc, admin } = this.props
+    return doc.trashed && admin
+      ? this._renderTrashedDoc()
+      : this._renderMainCard()
   }
 }
 

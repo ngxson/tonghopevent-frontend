@@ -30,3 +30,7 @@
     font-weight: bold;
     border: 2px solid #455a64;
 }
+
+.restore-btn {
+    margin-top: 0 !important;
+}
