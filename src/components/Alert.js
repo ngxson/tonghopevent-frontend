@@ -26,7 +26,7 @@ class Alert extends React.Component {
     })
   }
 
-  handleClose = () => {
+  handleClickOK = () => {
     if (this.state.onClickOK) {
       this.state.onClickOK();
       this.setState({ onClickOK: null });
@@ -43,7 +43,7 @@ class Alert extends React.Component {
       <div>
         <Dialog
           open={this.state.open}
-          onClose={this.handleClose}
+          onClose={this.handleCancel}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
@@ -54,7 +54,7 @@ class Alert extends React.Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose.bind(this)} color="primary" autoFocus>OK</Button>
+            <Button onClick={this.handleClickOK.bind(this)} color="primary" autoFocus>OK</Button>
             {this.state.showCancel
               ? <Button onClick={this.handleCancel.bind(this)} color="primary" autoFocus>Cancel</Button>
               : null}
