@@ -101,7 +101,7 @@ class Doc extends React.Component {
     `● Link facebook: ${Utils.cleanFBLink(doc.linkfb)}\n` +
     (!!doc.wanted ? '● Yêu cầu đối tượng: ' + doc.wanted.join(', ').trim() + '\n' : '') + 
     (!!doc.deadline ? '● Deadline tuyển nhân sự: ' + doc.deadline.trim() + '\n' : '') +
-    (!!doc.benefit ? '● Quyền lợi khi tham gia dự án: ' + doc.benefit.trim() + '\n' : '') +
+    (!!doc.benefit ? '● Quyền lợi khi tham gia dự án:\n' + doc.benefit.trim() + '\n' : '') +
     `\nTrackID:${doc.psid}:${doc.id}`
 
     return content.trim()
