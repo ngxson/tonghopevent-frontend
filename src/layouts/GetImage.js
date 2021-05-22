@@ -77,10 +77,14 @@ class GetImage extends React.Component {
   onSaveToken() {
     let fbtoken = this.state.access_token
     fbtoken = fbtoken.match(/EA[a-zA-Z0-9]+/)
-    Utils.setLocalStorage('fbtoken', fbtoken[0])
-    const urlNow = window.location.hash
-    window.location.hash = '#/reload'
-    setTimeout(() => { window.location.hash = urlNow }, 50)
+    try {
+      Utils.setLocalStorage('fbtoken', fbtoken[0])
+      const urlNow = window.location.hash
+      window.location.hash = '#/reload'
+      setTimeout(() => { window.location.hash = urlNow }, 50)
+    } catch (e) {
+      window.alert('token không hợp lệ')
+    }
   }
 
   _renderTitleCard() {

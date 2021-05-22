@@ -1,4 +1,4 @@
-
+import React from 'react'
 import axios from 'axios'
 
 const ORG_CODE = {
@@ -121,6 +121,13 @@ class Utils {
     }, function(err) {
       console.error('Async: Could not copy text: ', err);
     });
+  }
+
+  static nl2br(text) {
+    return text.trim().replace(/\r/g, '').split('\n').map(function(item, i, arr) {
+      const isLast = i === arr.length - 1
+      return <span key={i}>{item}{!isLast && <br/>}</span>
+    })
   }
 }
 

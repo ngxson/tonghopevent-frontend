@@ -8,7 +8,6 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import Linkify from 'react-linkify'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Fab from '@material-ui/core/Fab'
 import Divider from '@material-ui/core/Divider'
 import CheckIcon from '@material-ui/icons/Check'
@@ -107,13 +106,6 @@ class Doc extends React.Component {
     return content.trim()
   }
 
-  nl2br(text) {
-    return text.trim().replace(/\r/g, '').split('\n').map(function(item, i, arr) {
-      const isLast = i === arr.length - 1
-      return <span key={i}>{item}{!isLast && <br/>}</span>
-    })
-  }
-
   generateLocationTag(doc) {
     const { location } = doc
     if (!location) return ''
@@ -166,12 +158,12 @@ class Doc extends React.Component {
     return (
       <React.Fragment>
         <p>{this.generateLocationTag(doc)} {doc.type.join(' ')}</p>
-        <p>{this.nl2br(doc.description)}</p>
+        <p>{Utils.nl2br(doc.description)}</p>
         <p>
           ● Link facebook: {Utils.cleanFBLink(doc.linkfb)}<br/>
           {!!doc.wanted && <span>● Yêu cầu đối tượng: {doc.wanted.join(', ')}<br/></span>}
-          {!!doc.deadline && <span>● Deadline tuyển nhân sự: {this.nl2br(doc.deadline)}<br/></span>}
-          {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{this.nl2br(doc.benefit)}<br/></span>}
+          {!!doc.deadline && <span>● Deadline tuyển nhân sự: {Utils.nl2br(doc.deadline)}<br/></span>}
+          {!!doc.benefit && <span>● Quyền lợi khi tham gia dự án: <br/>{Utils.nl2br(doc.benefit)}<br/></span>}
         </p>
         {this.props.admin && <p>TrackID:{doc.psid}:{doc.id}</p>}
         {!!doc.image && <p>Ảnh tuỳ chọn: {'https://drive.google.com/open?id=' + doc.image[0]}</p>}
@@ -226,7 +218,7 @@ class Doc extends React.Component {
       {this.props.admin &&
         <React.Fragment>
           {!this.state.loading ? <div>
-            {doc.comment && doc.comment.trim().length > 0 && <p><b>● Ghi chú:</b> {this.nl2br(doc.comment)}</p>}
+            {doc.comment && doc.comment.trim().length > 0 && <p><b>● Ghi chú:</b> {Utils.nl2br(doc.comment)}</p>}
             {!!doc.feedback && <p>● Câu hỏi, góp ý: {doc.feedback}</p>}
             <Button variant="outlined" onClick={this.toggleTrashDoc.bind(this)} color='primary'>Xóa</Button>
             <Button variant="outlined" onClick={this.toggleApproved.bind(this)} color='primary'>Tick</Button>

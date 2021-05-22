@@ -95,6 +95,7 @@ class Header extends React.Component {
                 onClose={this.handleClose}
               >
                 <MenuItem onClick={() => {window.location.href = '#/'}}>Quản lý</MenuItem>
+                <MenuItem onClick={() => {window.location.href = '#/scheduled'}}>Bài đã lên lịch</MenuItem>
                 <MenuItem onClick={() => {window.location.href = 'https://blog.ngxson.com/tonghopevent/'}}>Hướng dẫn</MenuItem>
                 <MenuItem onClick={() => {window.location.href = 'https://sites.google.com/view/tonghopevent'}}>Điều khoản SD</MenuItem>
                 <MenuItem onClick={this.doLogout.bind(this)}>Logout</MenuItem>

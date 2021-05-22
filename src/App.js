@@ -13,6 +13,7 @@ import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Alert from './components/Alert';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+import Scheduled from './layouts/Scheduled';
 
 class Main extends React.Component {
   constructor() {
@@ -35,6 +36,10 @@ class Main extends React.Component {
 
   Login = () => {
     return <LoginLayout />
+  }
+
+  Scheduled = () => {
+    return <Scheduled />
   }
 
   Home = () => {
@@ -66,7 +71,7 @@ class Main extends React.Component {
     return <center>
       Developed by&nbsp;
       <b><a href="https://ngxson.com" target="_blank" rel="noopener noreferrer">Nui</a></b><br/>
-      Version 4.8r2
+      Version 4.9
       <br/><br/>
     </center>
   }
@@ -85,6 +90,7 @@ class Main extends React.Component {
             <Route path="/view/:id" component={this.View} />
             <Route path="/publish" component={this.Publish} />
             <Route path="/getimage" component={this.GetImage} />
+            <Route path="/scheduled" component={this.Scheduled} />
             <this.Copyright />
           </div>
           <Alert />
